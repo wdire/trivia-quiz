@@ -36,15 +36,18 @@ const CATEGORY_ORDER = {
 
 interface Props {
     totalQuestions:number;
+    setOptions:Function
 }
 
 interface State {
     optionButton: boolean;
     categories:Array<Object>;
     optionsLoaded:boolean;
+    optionsHeight:number;
 }
 
 export default class TriviaOptions extends Component<Props, State> {
+    optionsMenuElm:any;
 
     constructor(props: any){
         super(props);
@@ -52,8 +55,10 @@ export default class TriviaOptions extends Component<Props, State> {
         this.state = {
             optionButton: false,
             categories: [],
-            optionsLoaded:false
+            optionsLoaded:false,
+            optionsHeight:0
         };
+
     }
 
     getCategories = async () => {
@@ -79,8 +84,10 @@ export default class TriviaOptions extends Component<Props, State> {
             };
         });
 
+        
         this.setState({categories:orderedCategories});
         this.setState({optionsLoaded:true});
+        this.setState({optionsHeight:this.optionsMenuElm.scrollHeight});
     }
 
     writeCategories = () => {
@@ -99,7 +106,7 @@ export default class TriviaOptions extends Component<Props, State> {
                                     return(
                                         <TriviaOptionsSelect key={k}>
                                             <label>
-                                                <TriviaOptionsSelectInput name="trivia-category" defaultChecked />
+                                                <TriviaOptionsSelectInput data-id={"any"} name="trivia-category" defaultChecked />
                                                 <TriviaOptionsSelectButton>
                                                     Any
                                                 </TriviaOptionsSelectButton>
@@ -111,7 +118,7 @@ export default class TriviaOptions extends Component<Props, State> {
                                 return(
                                     <TriviaOptionsSelect key={k.id}>
                                         <label>
-                                            <TriviaOptionsSelectInput name="trivia-category"/>
+                                            <TriviaOptionsSelectInput data-id={k.id} name="trivia-category"/>
                                             <TriviaOptionsSelectButton>
                                                 {k.name}
                                             </TriviaOptionsSelectButton>
@@ -136,16 +143,22 @@ export default class TriviaOptions extends Component<Props, State> {
         if(!this.state.optionsLoaded){
             this.getCategories();
         }
-
+        this.setState({optionsHeight:this.optionsMenuElm.scrollHeight});
         this.setState({optionButton:!this.state.optionButton});
     }
 
-    handleRadioButtons = (e:React.ChangeEvent<HTMLInputElement>) => {
-        console.log(e,"2");
+    handleCategorySelect = (e:React.ChangeEvent<HTMLInputElement>) => {
+        let option = e.target.getAttribute("data-id") || "any";
+        this.props.setOptions("optionCategory", option);
+
+    }
+
+    handleDifficultySelect = (e:React.ChangeEvent<HTMLInputElement>) => {
+        let option = e.target.getAttribute("data-id") || "any";
+        this.props.setOptions("optionDifficulty", option);
     }
 
     render() {
-
         return (
             <>
                 <TriviaOptionsWrapper>
@@ -155,7 +168,7 @@ export default class TriviaOptions extends Component<Props, State> {
                             <AiFillSetting/>
                         </TriviaOptionsButton>
                     </TriviaOptionsTextWrapper>
-                    <TriviaOptionsMenuWrapper active={this.state.optionButton} valHeight={525}>
+                    <TriviaOptionsMenuWrapper active={this.state.optionButton} ref={(component) => this.optionsMenuElm = component} valHeight={this.state.optionsHeight}>
                     {!this.state.optionsLoaded && (
                         <Loading height="30px">
                             <AiOutlineLoading3Quarters></AiOutlineLoading3Quarters>
@@ -163,19 +176,21 @@ export default class TriviaOptions extends Component<Props, State> {
                     )}
 
                     {this.state.optionsLoaded && (
-                        
                     
-                        <TriviaOptionsMenu onChange={this.handleRadioButtons}>
+                        <TriviaOptionsMenu>
                             <TriviaOptionsMenuHeader fontSize="16px" style={{marginBottom:"12px"}}>Categories</TriviaOptionsMenuHeader>
 
-                            {this.writeCategories()}
-
+                            <div onChange={this.handleCategorySelect}>
+                                {this.writeCategories()}
+                            </div>
+                            
                             <TriviaOptionsMenuHeader fontSize="16px" style={{marginBottom:"12px"}}>Difficulty</TriviaOptionsMenuHeader>
 
+                            <div onChange={this.handleDifficultySelect}>    
                                 <TriviaOptionsMenuButtonGroup>
                                     <TriviaOptionsSelect>
                                         <label>
-                                            <TriviaOptionsSelectInput name="trivia-difficulty" defaultChecked />
+                                            <TriviaOptionsSelectInput data-id="any" name="trivia-difficulty" defaultChecked />
                                             <TriviaOptionsSelectButton>
                                                 Any
                                             </TriviaOptionsSelectButton>
@@ -183,7 +198,7 @@ export default class TriviaOptions extends Component<Props, State> {
                                     </TriviaOptionsSelect>
                                     <TriviaOptionsSelect>
                                         <label>
-                                            <TriviaOptionsSelectInput name="trivia-difficulty"/>
+                                            <TriviaOptionsSelectInput data-id="easy" name="trivia-difficulty"/>
                                             <TriviaOptionsSelectButton>
                                                 Easy
                                             </TriviaOptionsSelectButton>
@@ -191,7 +206,7 @@ export default class TriviaOptions extends Component<Props, State> {
                                     </TriviaOptionsSelect>
                                     <TriviaOptionsSelect>
                                         <label>
-                                            <TriviaOptionsSelectInput name="trivia-difficulty"/>
+                                            <TriviaOptionsSelectInput data-id="medium" name="trivia-difficulty"/>
                                             <TriviaOptionsSelectButton>
                                                 Medium
                                             </TriviaOptionsSelectButton>
@@ -199,13 +214,14 @@ export default class TriviaOptions extends Component<Props, State> {
                                     </TriviaOptionsSelect>
                                     <TriviaOptionsSelect>
                                         <label>
-                                            <TriviaOptionsSelectInput name="trivia-difficulty"/>
+                                            <TriviaOptionsSelectInput data-id="hard" name="trivia-difficulty"/>
                                             <TriviaOptionsSelectButton>
                                                 Hard
                                             </TriviaOptionsSelectButton>
                                         </label>
                                     </TriviaOptionsSelect>
                                 </TriviaOptionsMenuButtonGroup>
+                            </div>
 
                         </TriviaOptionsMenu>
                     )}

@@ -64,6 +64,8 @@ export const TriviaOptionsMenuWrapper = styled.div<triviaOptionsMenuWrapperProps
 
 export const TriviaOptionsMenu = styled.div`
     padding:15px 10px;
+    max-height:550px;
+    overflow-y:auto;
 `;
 
 export const TriviaOptionsMenuButtonGroup = styled.div`

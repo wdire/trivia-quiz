@@ -20,6 +20,7 @@ export const GlobalStyle = createGlobalStyle`
 
 export const Main = styled.div`
     margin:0 auto;
+    max-width:100%;
     width:500px;
 `;
  
