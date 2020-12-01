@@ -1,5 +1,5 @@
 import styled, { createGlobalStyle } from 'styled-components';
-import { colors } from "./general";
+import { colors } from "./components/General.styles";
 
 export const GlobalStyle = createGlobalStyle`
     html{
@@ -53,7 +53,11 @@ export const StartButton = styled.button`
     transition:1s background;
 
     :hover{
-        background:linear-gradient(45deg, red, #2980b9);
+        background:linear-gradient(45deg, #50b4f6, #2980b9);
+    }
+
+    :active{
+        background:linear-gradient(40deg, #50b4f6, #275a7b);
     }
 
     :focus,:hover{

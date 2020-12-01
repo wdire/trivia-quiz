@@ -1,6 +1,5 @@
 import styled, { css, keyframes } from 'styled-components';
-import { colors } from "../general";
-import TriviaOptions from './TriviaOptions';
+import { colors } from "./General.styles";
 
 const optionsSettingButtonSize = "24px";
 const optionsMenuColor = "#eee";
@@ -58,7 +57,7 @@ export const TriviaOptionsMenuWrapper = styled.div<triviaOptionsMenuWrapperProps
     margin-top:7px;
     background:${optionsMenuColor};
     border-radius:6px;
-    transition:0.3s max-height;
+    transition:0.5s max-height;
     max-height:${ props => props.active ? props.valHeight + "px" : "0px"};
     overflow:hidden;
 `;

@@ -14,8 +14,8 @@ export class App extends React.Component<IProps, IState>{
 
     constructor(props: IProps){
         super(props);
+        
         this.state = {
-            questionOptions:false
         }
     }
 
