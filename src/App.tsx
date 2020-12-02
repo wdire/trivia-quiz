@@ -29,7 +29,7 @@ export class App extends React.Component<IProps, IState>{
         this.state = {
             optionCategory:"any",
             optionDifficulty: "any",
-            gameStage:STAGE.START
+            gameStage:STAGE.INGAME
         }
     }
 
@@ -38,11 +38,47 @@ export class App extends React.Component<IProps, IState>{
         this.setState(obj);
     }
 
+    restartGame = (stage: STAGE, msg:any) => {
+
+    }
+
     startGame = () => {
 
 
 
         this.setState({gameStage:STAGE.INGAME});
+    }
+
+    renderStages = () => {
+        switch(this.state.gameStage){
+            case STAGE.START: return(
+                <>
+                    <TriviaOptions 
+                        totalQuestions={TOTAL_QUESTIONS}
+                        setOptions={this.setOptions}
+                    />
+                    <StartButton onClick={this.startGame}>Start</StartButton>
+                </>
+            )
+            break;
+
+            case STAGE.INGAME: return(
+                    <>
+                        <TriviaQuestions 
+                            totalQuestions={TOTAL_QUESTIONS}
+                            category={this.state.optionCategory}
+                            difficulty={this.state.optionDifficulty}
+                        />
+                    </>
+            ) 
+            break;
+
+            case STAGE.ENDGAME: return(
+                22
+            )
+            break;
+        }
+        
     }
 
     render(){
@@ -54,28 +90,7 @@ export class App extends React.Component<IProps, IState>{
                     <Wrapper>
                         <h1>Trivia Quiz</h1>
                         {
-                            this.state.gameStage === STAGE.START ? (
-                                <>
-                                    <TriviaOptions 
-                                        totalQuestions={TOTAL_QUESTIONS}
-                                        setOptions={this.setOptions}
-                                    />
-                                    <StartButton onClick={this.startGame} >Start</StartButton>
-                                </>
-                            ) : [
-                                this.state.gameStage === STAGE.INGAME ? (
-                                    <>
-                                        <TriviaQuestions 
-                                            category={this.state.optionCategory}
-                                            difficulty={this.state.optionDifficulty}
-                                        />
-                                    </>
-                                ) : [
-                                    this.state.gameStage === STAGE.ENDGAME ? (
-                                        23
-                                    ) : null
-                                ]
-                            ]
+                            this.renderStages()
                         }
 
                     </Wrapper>

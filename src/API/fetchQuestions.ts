@@ -1,4 +1,4 @@
-import { Category } from './fetchCategories';
+import { shuffleArray } from '../utils';
 export interface Question {
     category:string;
     type:string;
@@ -8,11 +8,14 @@ export interface Question {
     incorrect_answers:Array<String>;
 }
 
+export type QuestionState = Question & { answers:string[] }
+
 export enum QuestionStatusCode {
     SUCCESS = 0,
     NOT_ENOUGH_QUESTIONS = 1,
     UNKNOWN_ERROR = 2
 }
+
 
 export const fetchQuestions = async (categoryId:string, difficulty:string) => {
 
@@ -35,7 +38,13 @@ export const fetchQuestions = async (categoryId:string, difficulty:string) => {
     const data = await( await fetch(endpoint) ).json();
 
     if(data.response_code === 0){
-        return {status:QuestionStatusCode.SUCCESS, data:data.results};
+        let newData = data.results.map((q:Question) => {
+            return{
+                ...q,
+                answers:shuffleArray([...q.incorrect_answers, q.correct_answer])
+            };
+        });
+        return {status:QuestionStatusCode.SUCCESS, data: newData};
     }else if(data.response_code === 1){
         return {status:QuestionStatusCode.NOT_ENOUGH_QUESTIONS};
     }else{

@@ -92,7 +92,7 @@ export default class TriviaOptions extends Component<Props, State> {
 
     writeCategories = () => {
         
-        const output = (
+        return(
             this.state.categories && this.state.categories.map((e, i)=>{
                 const [categoryName, categoryContent] = Object.entries(e)[0];
                 
@@ -131,8 +131,6 @@ export default class TriviaOptions extends Component<Props, State> {
                 )
             })
         );
-
-        return output;
     }
 
     componentDidMount = () => {
