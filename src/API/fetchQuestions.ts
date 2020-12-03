@@ -16,9 +16,9 @@ export enum QuestionStatusCode {
     UNKNOWN_ERROR = 2
 }
 
-export const fetchQuestions = async (categoryId:string, difficulty:string) => {
+export const fetchQuestions = async (totalQuestions: number, categoryId:string, difficulty:string) => {
 
-    let endpoint = "https://opentdb.com/api.php?amount=10";
+    let endpoint = `https://opentdb.com/api.php?amount=${totalQuestions}`;
 
     if(Number(categoryId) >= 9 && 32 >= Number(categoryId)){
         if(categoryId !== "any"){
@@ -43,6 +43,7 @@ export const fetchQuestions = async (categoryId:string, difficulty:string) => {
                 answers:shuffleArray([...q.incorrect_answers, q.correct_answer])
             };
         });
+        newData = shuffleArray(newData);
         return {status:QuestionStatusCode.SUCCESS, data: newData};
     }else if(data.response_code === 1){
         return {status:QuestionStatusCode.NOT_ENOUGH_QUESTIONS};

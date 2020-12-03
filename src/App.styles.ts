@@ -47,13 +47,13 @@ export const StartButton = styled(BlueButton)`
 
 export const QuestionCorrect = styled.div`
     svg{
-        color:green;
+        color:#4BDB7D;
     }
 `;
 
 export const QuestionWrong = styled.div`
     svg{
-        color:red;
+        color:#FA614D;
     }
 `;
 

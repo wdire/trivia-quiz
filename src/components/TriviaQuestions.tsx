@@ -72,7 +72,7 @@ export default class TriviaQuestions extends Component<Props, State> {
     }
 
     getQuestions = async () => {
-        let result:{status:QuestionStatusCode, data?:QuestionState[]} = await fetchQuestions(this.props.category.id, this.props.difficulty);
+        let result:{status:QuestionStatusCode, data?:QuestionState[]} = await fetchQuestions(this.props.totalQuestions, this.props.category.id, this.props.difficulty);
         if(result.status === QuestionStatusCode.SUCCESS){
             this.setState({questions:result.data || []});
             this.setState({questionsLoaded:true});
@@ -144,10 +144,10 @@ export default class TriviaQuestions extends Component<Props, State> {
                 <TriviaQuestion>{decodeHtml(currQuestion.question)}</TriviaQuestion>
                 <TriviaAnswersGroup onChange={this.handleUserAnswer}>
                     {
-                        currQuestion.answers.map((answer)=>{
+                        currQuestion.answers.map((answer, index)=>{
                             return(
                                 <TriviaAnswer 
-                                    key={answer}
+                                    key={answer+this.state.currentQuestion}
                                     correct={this.state.userAnswers ? this.state.userAnswers[this.state.currentQuestion - 1]?.correctAnswer === answer : false}
                                     userClicked={this.state.userAnswers ? this.state.userAnswers[this.state.currentQuestion - 1]?.answer === answer : false}
                                     answered={Boolean(this.state.userAnswers[this.state.currentQuestion - 1])}
