@@ -1,7 +1,7 @@
 {
-  "name": "my-quiz-app",
+  "name": "trivia-quiz",
   "version": "1.0.0",
-  "description": "A Quiz App",
+  "description": "Trivia Quiz App",
   "scripts": {
     "build": "webpack --progress --mode=production",
     "start": "webpack s --config ./webpack.config.js --mode=development"
