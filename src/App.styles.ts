@@ -44,3 +44,46 @@ export const Wrapper = styled.div`
 export const StartButton = styled(BlueButton)`
     padding:10px 28px;
 `;
+
+export const QuestionCorrect = styled.div`
+    svg{
+        color:green;
+    }
+`;
+
+export const QuestionWrong = styled.div`
+    svg{
+        color:red;
+    }
+`;
+
+export const QuestionProgress = styled.div`
+    display:flex;
+    margin-top:5px;
+    margin-bottom:15px;
+
+    ${QuestionCorrect},
+    ${QuestionWrong}{
+        height:24px;
+        margin-right:2px;
+    }
+
+    svg{
+        font-size:24px;
+    }
+`;
+
+export const EndHeadText = styled.div`
+    font-size:18px;
+    font-weight:400;
+`;
+
+export const EndScore = styled.div`
+    font-size:30px;
+    font-weight:lighter;
+    margin-bottom:10px;
+`;
+
+export const RestartGameButton = styled(BlueButton)`
+    margin-top:15px;
+`;

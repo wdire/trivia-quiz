@@ -4,7 +4,7 @@ import { AiOutlineLoading3Quarters } from 'react-icons/ai';
 import { Question, QuestionState, QuestionStatusCode, fetchQuestions} from "../API/fetchQuestions";
 import { BlueButton, Loading } from './General.styles';
 import { decodeHtml } from '../utils';
-import { STAGE } from "../App";
+import { GameStats, STAGE } from "../App";
 import { 
     TriviaQuestionsWrapper,
     TriviaQuestion,
@@ -38,8 +38,8 @@ interface Props {
         id:string;
     };
     difficulty:string;
-    setGameState:Function;
-    setUserAnswers:Function;
+    setGameState(stage: STAGE):void;
+    setGameStats(gameStats: GameStats):void;
 }
 
 interface State {
@@ -48,6 +48,7 @@ interface State {
     questionsLoaded:boolean;
     userAnswers:AnswerObject[];
     error:ErrorObject;
+    score:number;
 }
 
 export default class TriviaQuestions extends Component<Props, State> {
@@ -65,7 +66,8 @@ export default class TriviaQuestions extends Component<Props, State> {
             error:{
                 error:false,
                 desc:""
-            }
+            },
+            score:0
         }
     }
 
@@ -88,10 +90,11 @@ export default class TriviaQuestions extends Component<Props, State> {
     }
 
     handleUserAnswer = (e:any) => {
+        //If still on the same question(didn't pressed next yet), return
         if(this.state.userAnswers.length === this.state.currentQuestion){
             return;
         }
-        console.log(e);
+
         let userAnswer = e.target.nextElementSibling.innerText;
         let correctAnswer = this.state.questions[this.state.currentQuestion-1].correct_answer;
 
@@ -104,7 +107,14 @@ export default class TriviaQuestions extends Component<Props, State> {
             correctAnswer:correctAnswer
         };
 
+        //Increment score if correct
+        if(correct){
+            this.setState((prevState) => ({score:prevState.score + 10}));
+        }
+
+        // Save user answers
         this.setState((prevState) => ({userAnswers:[...prevState.userAnswers, answerObject]}));
+
     }
 
     handleNextQuestion = () =>{
@@ -112,7 +122,10 @@ export default class TriviaQuestions extends Component<Props, State> {
         const nextQuestion = this.state.currentQuestion + 1;
 
         if(nextQuestion > this.props.totalQuestions){
-            this.props.setUserAnswers(this.state.userAnswers);
+            this.props.setGameStats({
+                score:this.state.score,
+                userAnswers:this.state.userAnswers
+            });
 
             this.props.setGameState(STAGE.ENDGAME);
         }else{
@@ -124,7 +137,10 @@ export default class TriviaQuestions extends Component<Props, State> {
         let currQuestion = this.state.questions[this.state.currentQuestion-1];
         return (
             <>
-                <TriviaCurrentQuestion>Question {this.state.currentQuestion}<span style={{fontSize:"14px"}}>/{this.props.totalQuestions}</span></TriviaCurrentQuestion>
+                <TriviaCurrentQuestion>
+                    <div>Question {this.state.currentQuestion}<span style={{fontSize:"14px"}}>/{this.props.totalQuestions}</span></div>
+                    <div>Score: {this.state.score}</div>
+                </TriviaCurrentQuestion>
                 <TriviaQuestion>{decodeHtml(currQuestion.question)}</TriviaQuestion>
                 <TriviaAnswersGroup onChange={this.handleUserAnswer}>
                     {

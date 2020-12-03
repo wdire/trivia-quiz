@@ -1,14 +1,20 @@
 import React from "react";
-import { GlobalStyle, Wrapper, Main, StartButton } from "./App.styles";
+import { AiFillCheckCircle, AiFillCloseCircle } from "react-icons/ai";
+import { GlobalStyle, Wrapper, Main, StartButton, QuestionProgress, QuestionCorrect, QuestionWrong, EndHeadText, RestartGameButton, EndScore } from "./App.styles";
 import TriviaOptions from "./components/TriviaOptions";
 import TriviaQuestions, { AnswerObject } from "./components/TriviaQuestions";
 
-const TOTAL_QUESTIONS = 3;
+const TOTAL_QUESTIONS = 10;
 
 export enum STAGE {
     START = 0,
     INGAME = 1,
     ENDGAME = 2
+}
+
+export interface GameStats{
+    score:number;
+    userAnswers:AnswerObject[];
 }
 
 interface IProps{
@@ -24,12 +30,15 @@ interface IState{
 }
 
 export class App extends React.Component<IProps, IState>{    
-    userAnswers:AnswerObject[];
+    gameStats:GameStats;
 
     constructor(props: IProps){
         super(props);
 
-        this.userAnswers = [];
+        this.gameStats = {
+            score:0,
+            userAnswers:[]
+        };
 
         this.state = {
             optionCategory:{
@@ -46,8 +55,8 @@ export class App extends React.Component<IProps, IState>{
         this.setState(obj);
     }
 
-    setUserAnswers = (userAnswers: AnswerObject[]) => {
-        this.userAnswers = userAnswers;
+    setGameStats = (gameStats: GameStats) => {
+        this.gameStats = gameStats;
     }
 
     setGameState = (stage:STAGE) => {
@@ -78,22 +87,53 @@ export class App extends React.Component<IProps, IState>{
                             category={this.state.optionCategory}
                             difficulty={this.state.optionDifficulty}
                             setGameState={this.setGameState}
-                            setUserAnswers={this.setUserAnswers}
+                            setGameStats={this.setGameStats}
                         />
                     </>
             ) 
             break;
 
             case STAGE.ENDGAME: return(
-                <div>GAME OVER</div>
+                <>
+                    {this.writeGameStats()}
+                    <RestartGameButton onClick={()=>{this.setGameState(STAGE.START)}}>Play Again</RestartGameButton>
+                </>
             )
-            break;
+            break;  
         }
         
     }
 
-    writeUserAnswers = () => {
-        console.log(this.userAnswers);
+    writeGameStats = () => {
+        let correctAnswers = 0;
+        return(
+            <>
+                <EndHeadText>Your Score</EndHeadText>
+                <EndScore>{this.gameStats.score}</EndScore>
+                <EndHeadText>Your Progress</EndHeadText>
+                <QuestionProgress>
+                    {this.gameStats.userAnswers && this.gameStats.userAnswers.map((answer:AnswerObject, index)=>{
+                        if(answer.correct){
+                            correctAnswers++;
+                            return(
+                                <QuestionCorrect key={index}>
+                                    <AiFillCheckCircle/>
+                                </QuestionCorrect>
+                            )
+                        }else{
+                            return(
+                                <QuestionWrong key={index}>
+                                    <AiFillCloseCircle/>
+                                </QuestionWrong>
+                            );
+                        }
+                    })}
+                    
+                </QuestionProgress>
+
+                <div>Congrats! You guessed {correctAnswers} out of {TOTAL_QUESTIONS} questions correctly, wanna play again ?</div>
+            </>
+        );
     }
 
     render(){

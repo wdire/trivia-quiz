@@ -16,11 +16,9 @@ export enum QuestionStatusCode {
     UNKNOWN_ERROR = 2
 }
 
-
 export const fetchQuestions = async (categoryId:string, difficulty:string) => {
 
     let endpoint = "https://opentdb.com/api.php?amount=10";
-
 
     if(Number(categoryId) >= 9 && 32 >= Number(categoryId)){
         if(categoryId !== "any"){
@@ -38,6 +36,7 @@ export const fetchQuestions = async (categoryId:string, difficulty:string) => {
     const data = await( await fetch(endpoint) ).json();
 
     if(data.response_code === 0){
+        // Store all "correct" and "incorrect" answers in "answers";
         let newData = data.results.map((q:Question) => {
             return{
                 ...q,

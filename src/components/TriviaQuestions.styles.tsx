@@ -72,6 +72,8 @@ export const TriviaCurrentQuestion = styled.div`
     margin-bottom:2px;
     font-size:16px;
     color:#606060;
+    display:flex;
+    justify-content:space-between;
 `;
 
 export const TriviaNextQuestionButton = styled(BlueButton)`
