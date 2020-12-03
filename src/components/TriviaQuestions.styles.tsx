@@ -1,4 +1,5 @@
-import styled, { css }from "styled-components";
+import styled, { css } from "styled-components";
+import { BlueButton } from "./General.styles";
 
 export const TriviaQuestionsWrapper = styled.div`
     display:flex;
@@ -73,29 +74,8 @@ export const TriviaCurrentQuestion = styled.div`
     color:#606060;
 `;
 
-export const TriviaNextQuestionButton = styled.button`
-    align-self:flex-end;
-    display:inline-block;
-    background:linear-gradient(90deg, #3498db, #2980b9);
-    border-radius:7px;
-    color:#fff;
-    padding:9px 22px;
-    cursor:pointer;
-    user-select:none;
-    border:none;
-    font-size:16px;
-
-    :hover{
-        background:linear-gradient(45deg, #50b4f6, #2980b9);
-    }
-
-    :active{
-        background:linear-gradient(40deg, #50b4f6, #275a7b);
-    }
-
-    :focus,:hover{
-        outline:none;
-    }
+export const TriviaNextQuestionButton = styled(BlueButton)`
+    
 `;
 
 export const TriviaAnswerInput = styled.input.attrs(props => ({
@@ -113,4 +93,9 @@ export const TriviaBottom = styled.div`
 export const TriviaQuestionCategory = styled.div`
     align-self:flex-end;
     color:#999999;
+`;
+
+export const TriviaErrorDesc = styled.div`
+    line-height: 1.4em;
+    font-size: 16px;
 `;

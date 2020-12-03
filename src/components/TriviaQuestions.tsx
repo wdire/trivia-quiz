@@ -2,8 +2,9 @@ import React, { Component } from 'react'
 import ReactDOM from 'react-dom';
 import { AiOutlineLoading3Quarters } from 'react-icons/ai';
 import { Question, QuestionState, QuestionStatusCode, fetchQuestions} from "../API/fetchQuestions";
-import { Loading } from './General.styles';
+import { BlueButton, Loading } from './General.styles';
 import { decodeHtml } from '../utils';
+import { STAGE } from "../App";
 import { 
     TriviaQuestionsWrapper,
     TriviaQuestion,
@@ -14,21 +15,31 @@ import {
     TriviaAnswerInput,
     TriviaAnswerButton,
     TriviaBottom,
-    TriviaQuestionCategory
+    TriviaQuestionCategory,
+    TriviaErrorDesc
 } from "./TriviaQuestions.styles";
 
-interface AnswerObject{
+export interface AnswerObject{
     question:string;
     answer:string;
     correctAnswer:string;
     correct:boolean;
 }
 
+interface ErrorObject{
+    error:boolean;
+    desc:string;
+}
+
 interface Props {
     totalQuestions:number;
-    category:string;
+    category: {
+        name:string;
+        id:string;
+    };
     difficulty:string;
-
+    setGameState:Function;
+    setUserAnswers:Function;
 }
 
 interface State {
@@ -36,6 +47,7 @@ interface State {
     currentQuestion:number;
     questionsLoaded:boolean;
     userAnswers:AnswerObject[];
+    error:ErrorObject;
 }
 
 export default class TriviaQuestions extends Component<Props, State> {
@@ -43,28 +55,35 @@ export default class TriviaQuestions extends Component<Props, State> {
     constructor(props: any){
         super(props);
 
+        this.getQuestions();
+
         this.state = {
             questions:[],
             currentQuestion:1,
             questionsLoaded:false,
-            userAnswers:[]
+            userAnswers:[],
+            error:{
+                error:false,
+                desc:""
+            }
         }
     }
 
-    componentWillMount = () => {
-        this.getQuestions();
-    }
-
     getQuestions = async () => {
-        console.log(this.props);
-        let result:{status:QuestionStatusCode, data?:QuestionState[]} = await fetchQuestions(this.props.category, this.props.difficulty);
+        let result:{status:QuestionStatusCode, data?:QuestionState[]} = await fetchQuestions(this.props.category.id, this.props.difficulty);
         if(result.status === QuestionStatusCode.SUCCESS){
             this.setState({questions:result.data || []});
             this.setState({questionsLoaded:true});
         }else if(result.status === QuestionStatusCode.NOT_ENOUGH_QUESTIONS){
-
+            this.setState({error:{
+                error:true,
+                desc:`There are not enough question with options <div>Category <b>${this.props.category.name}</b> and Difficulty <b>${this.props.difficulty.charAt(0).toUpperCase() + this.props.difficulty.slice(1)}</b>.</div> Please try changing one of these.`
+            }});
         }else if(result.status === QuestionStatusCode.UNKNOWN_ERROR){
-
+            this.setState({error:{
+                error:true,
+                desc:`There is a unknown error. Please try again after a time, or message me about this error.`
+            }});
         }
     }
 
@@ -72,7 +91,7 @@ export default class TriviaQuestions extends Component<Props, State> {
         if(this.state.userAnswers.length === this.state.currentQuestion){
             return;
         }
-        console.log(e); 
+        console.log(e);
         let userAnswer = e.target.nextElementSibling.innerText;
         let correctAnswer = this.state.questions[this.state.currentQuestion-1].correct_answer;
 
@@ -89,7 +108,16 @@ export default class TriviaQuestions extends Component<Props, State> {
     }
 
     handleNextQuestion = () =>{
-        this.setState((prevState) => ({currentQuestion:prevState.currentQuestion+1}));
+
+        const nextQuestion = this.state.currentQuestion + 1;
+
+        if(nextQuestion > this.props.totalQuestions){
+            this.props.setUserAnswers(this.state.userAnswers);
+
+            this.props.setGameState(STAGE.ENDGAME);
+        }else{
+            this.setState((prevState) => ({currentQuestion:nextQuestion}));
+        }
     }
 
     writeQuestions = () => {
@@ -123,8 +151,10 @@ export default class TriviaQuestions extends Component<Props, State> {
                 <TriviaBottom>
                     <TriviaQuestionCategory>{currQuestion.category}</TriviaQuestionCategory>
                     {this.state.userAnswers.length === this.state.currentQuestion ? (
-                        <TriviaNextQuestionButton onClick={this.handleNextQuestion}>Next</TriviaNextQuestionButton>
-                    ) : ""}
+                        <>
+                            <TriviaNextQuestionButton onClick={this.handleNextQuestion}>Next</TriviaNextQuestionButton>
+                        </>
+                    ) : null}
                     
                 </TriviaBottom>
             </>
@@ -135,14 +165,22 @@ export default class TriviaQuestions extends Component<Props, State> {
         return (
             <>
                 <TriviaQuestionsWrapper>
-                    {!this.state.questionsLoaded && (
+                    {!this.state.error.error && !this.state.questionsLoaded && (
                         <Loading height="30px">
                             <AiOutlineLoading3Quarters></AiOutlineLoading3Quarters>
                         </Loading>
                     )}
-                    {this.state.questionsLoaded && 
+                    
+                    {!this.state.error.error && this.state.questionsLoaded && 
                         this.writeQuestions()
                     }
+
+                    {this.state.error.error && (
+                        <>
+                            <TriviaErrorDesc dangerouslySetInnerHTML={{__html:this.state.error.desc}}></TriviaErrorDesc>
+                            <BlueButton onClick={() => {this.props.setGameState(STAGE.START)}}>Go to Start</BlueButton>
+                        </>
+                    )}
                 </TriviaQuestionsWrapper>
             </>
         )

@@ -1,5 +1,5 @@
 import styled, { createGlobalStyle } from 'styled-components';
-import { colors } from "./components/General.styles";
+import { colors, BlueButton } from "./components/General.styles";
 
 export const GlobalStyle = createGlobalStyle`
     html{
@@ -41,27 +41,6 @@ export const Wrapper = styled.div`
 
 `;
 
-export const StartButton = styled.button`
-    background:linear-gradient(90deg, #3498db, #2980b9);
-    font-weight:lighter;
-    border-radius:10px;
-    border:none;
+export const StartButton = styled(BlueButton)`
     padding:10px 28px;
-    color:#fff;
-    font-size:16px;
-    cursor:pointer;
-
-    transition:1s background;
-
-    :hover{
-        background:linear-gradient(45deg, #50b4f6, #2980b9);
-    }
-
-    :active{
-        background:linear-gradient(40deg, #50b4f6, #275a7b);
-    }
-
-    :focus,:hover{
-        outline:none;
-    }
 `;

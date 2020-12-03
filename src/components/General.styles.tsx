@@ -27,3 +27,28 @@ export const Loading = styled.div<{height:String}>`
     }
     margin:20px 0;
 `;
+
+export const BlueButton = styled.button`
+    align-self:flex-end;
+    display:inline-block;
+    background:linear-gradient(90deg, #3498db, #2980b9);
+    border-radius:7px;
+    color:#fff;
+    padding:9px 22px;
+    cursor:pointer;
+    user-select:none;
+    border:none;
+    font-size:16px;
+
+    :hover{
+        background:linear-gradient(45deg, #50b4f6, #2980b9);
+    }
+
+    :active{
+        background:linear-gradient(40deg, #50b4f6, #275a7b);
+    }
+
+    :focus,:hover{
+        outline:none;
+    }
+`;

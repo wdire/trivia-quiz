@@ -106,7 +106,7 @@ export default class TriviaOptions extends Component<Props, State> {
                                     return(
                                         <TriviaOptionsSelect key={k}>
                                             <label>
-                                                <TriviaOptionsSelectInput data-id={"any"} name="trivia-category" defaultChecked />
+                                                <TriviaOptionsSelectInput data-id={0} data-name={"any"} name="trivia-category" defaultChecked />
                                                 <TriviaOptionsSelectButton>
                                                     Any
                                                 </TriviaOptionsSelectButton>
@@ -118,7 +118,7 @@ export default class TriviaOptions extends Component<Props, State> {
                                 return(
                                     <TriviaOptionsSelect key={k.id}>
                                         <label>
-                                            <TriviaOptionsSelectInput data-id={k.id} name="trivia-category"/>
+                                            <TriviaOptionsSelectInput data-id={k.id} data-name={k.name} name="trivia-category"/>
                                             <TriviaOptionsSelectButton>
                                                 {k.name}
                                             </TriviaOptionsSelectButton>
@@ -146,8 +146,12 @@ export default class TriviaOptions extends Component<Props, State> {
     }
 
     handleCategorySelect = (e:React.ChangeEvent<HTMLInputElement>) => {
-        let option = e.target.getAttribute("data-id") || "any";
-        this.props.setOptions("optionCategory", option);
+        let optionId = e.target.getAttribute("data-id") || "any";
+        let optionName = e.target.getAttribute("data-name") || "any";
+        this.props.setOptions("optionCategory", {
+            name:optionName,
+            id:optionId
+        });
 
     }
 

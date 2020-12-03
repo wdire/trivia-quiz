@@ -1,11 +1,11 @@
 import React from "react";
 import { GlobalStyle, Wrapper, Main, StartButton } from "./App.styles";
 import TriviaOptions from "./components/TriviaOptions";
-import TriviaQuestions from "./components/TriviaQuestions";
+import TriviaQuestions, { AnswerObject } from "./components/TriviaQuestions";
 
-const TOTAL_QUESTIONS = 10; 
+const TOTAL_QUESTIONS = 3;
 
-enum STAGE {
+export enum STAGE {
     START = 0,
     INGAME = 1,
     ENDGAME = 2
@@ -15,21 +15,29 @@ interface IProps{
 }
 
 interface IState{
-    optionCategory: string;
+    optionCategory: {
+        name:string;
+        id:string;
+    };
     optionDifficulty: string;
     gameStage:STAGE;
 }
 
 export class App extends React.Component<IProps, IState>{    
+    userAnswers:AnswerObject[];
 
     constructor(props: IProps){
         super(props);
 
-        
+        this.userAnswers = [];
+
         this.state = {
-            optionCategory:"any",
+            optionCategory:{
+                name:"any",
+                id:"0"
+            },
             optionDifficulty: "any",
-            gameStage:STAGE.INGAME
+            gameStage:STAGE.START
         }
     }
 
@@ -38,14 +46,15 @@ export class App extends React.Component<IProps, IState>{
         this.setState(obj);
     }
 
-    restartGame = (stage: STAGE, msg:any) => {
+    setUserAnswers = (userAnswers: AnswerObject[]) => {
+        this.userAnswers = userAnswers;
+    }
 
+    setGameState = (stage:STAGE) => {
+        this.setState({gameStage:stage});
     }
 
     startGame = () => {
-
-
-
         this.setState({gameStage:STAGE.INGAME});
     }
 
@@ -68,17 +77,23 @@ export class App extends React.Component<IProps, IState>{
                             totalQuestions={TOTAL_QUESTIONS}
                             category={this.state.optionCategory}
                             difficulty={this.state.optionDifficulty}
+                            setGameState={this.setGameState}
+                            setUserAnswers={this.setUserAnswers}
                         />
                     </>
             ) 
             break;
 
             case STAGE.ENDGAME: return(
-                22
+                <div>GAME OVER</div>
             )
             break;
         }
         
+    }
+
+    writeUserAnswers = () => {
+        console.log(this.userAnswers);
     }
 
     render(){
@@ -92,7 +107,6 @@ export class App extends React.Component<IProps, IState>{
                         {
                             this.renderStages()
                         }
-
                     </Wrapper>
                 </Main>
             </>  
