@@ -1,4 +1,4 @@
-import styled from "styled-components";
+import styled, { css }from "styled-components";
 
 export const TriviaQuestionsWrapper = styled.div`
     display:flex;
@@ -15,39 +15,41 @@ export const TriviaAnswersGroup = styled.div`
     flex-direction:column;
 `;
 
-export const TriviaAnswer = styled.button`
+interface TriviaAnswerProps{
+    correct:boolean;
+    userClicked:boolean;
+    answered:boolean;
+}
+
+export const TriviaAnswer = styled.button<TriviaAnswerProps>`
     margin: 3px 0;
-    cursor:pointer;
     font-size:15px;
     position:relative;
     overflow:hidden;
     transition:0.22s color;
     user-select:none;
     border:1px solid #b6b6b6;
-    background:#fff;
+    transition:0.22s background ease-out;
+    background: ${({correct, userClicked}) => 
+        correct
+            ? "#4BDB7D"
+            : !correct && userClicked
+                ? "#FA614D"
+                : "#fff"
+    };
 
-    :after{
-        content:"";
-        position:absolute;
-        width:100%;
-        height:100%;
-        left:0;
-        top:0;
-        transition:0.22s opacity ease-out;
-        background:#3498db;
-        opacity:0;
-    }
     :hover{
-        color:#fff;
-        border:1px solid #3498db;
+        ${ props => (!props.answered) && css`
+            color:#fff;
+            background:#3498db;
+            border:1px solid #3498db;
+        `}
     }
 
-    :hover:after{
-        opacity:1;
-    }
-
-    :active:after{
-        background:#2980b9;
+    :active{
+        ${ props => (!props.answered) && css`
+            background:#2980b9;
+        `}
     }
 
     :focus,:hover{
@@ -61,6 +63,7 @@ export const TriviaAnswerButton = styled.div`
     position:relative;
     padding: 10px 15px;
     z-index:10;
+    cursor:pointer;
 `;
 
 

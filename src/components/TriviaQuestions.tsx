@@ -19,6 +19,9 @@ import {
 
 interface AnswerObject{
     question:string;
+    answer:string;
+    correctAnswer:string;
+    correct:boolean;
 }
 
 interface Props {
@@ -32,6 +35,7 @@ interface State {
     questions:QuestionState[];
     currentQuestion:number;
     questionsLoaded:boolean;
+    userAnswers:AnswerObject[];
 }
 
 export default class TriviaQuestions extends Component<Props, State> {
@@ -41,8 +45,9 @@ export default class TriviaQuestions extends Component<Props, State> {
 
         this.state = {
             questions:[],
-            currentQuestion:0,
-            questionsLoaded:false
+            currentQuestion:1,
+            questionsLoaded:false,
+            userAnswers:[]
         }
     }
 
@@ -63,21 +68,52 @@ export default class TriviaQuestions extends Component<Props, State> {
         }
     }
 
+    handleUserAnswer = (e:any) => {
+        if(this.state.userAnswers.length === this.state.currentQuestion){
+            return;
+        }
+        console.log(e); 
+        let userAnswer = e.target.nextElementSibling.innerText;
+        let correctAnswer = this.state.questions[this.state.currentQuestion-1].correct_answer;
+
+        let correct = userAnswer === correctAnswer;
+
+        let answerObject = {
+            question:this.state.questions[this.state.currentQuestion-1].question,
+            answer:userAnswer,
+            correct:correct,
+            correctAnswer:correctAnswer
+        };
+
+        this.setState((prevState) => ({userAnswers:[...prevState.userAnswers, answerObject]}));
+    }
+
+    handleNextQuestion = () =>{
+        this.setState((prevState) => ({currentQuestion:prevState.currentQuestion+1}));
+    }
+
     writeQuestions = () => {
-        let currQuestion = this.state.questions[this.state.currentQuestion];
+        let currQuestion = this.state.questions[this.state.currentQuestion-1];
         return (
             <>
                 <TriviaCurrentQuestion>Question {this.state.currentQuestion}<span style={{fontSize:"14px"}}>/{this.props.totalQuestions}</span></TriviaCurrentQuestion>
                 <TriviaQuestion>{decodeHtml(currQuestion.question)}</TriviaQuestion>
-                <TriviaAnswersGroup>
+                <TriviaAnswersGroup onChange={this.handleUserAnswer}>
                     {
                         currQuestion.answers.map((answer)=>{
                             return(
-                                <TriviaAnswer>
-                                    <TriviaAnswerInput name="trivia-question"/>
-                                    <TriviaAnswerButton>
-                                        {decodeHtml(answer)}
-                                    </TriviaAnswerButton>
+                                <TriviaAnswer 
+                                    key={answer}
+                                    correct={this.state.userAnswers ? this.state.userAnswers[this.state.currentQuestion - 1]?.correctAnswer === answer : false}
+                                    userClicked={this.state.userAnswers ? this.state.userAnswers[this.state.currentQuestion - 1]?.answer === answer : false}
+                                    answered={Boolean(this.state.userAnswers[this.state.currentQuestion - 1])}
+                                >
+                                    <label>
+                                        <TriviaAnswerInput name="trivia-question"/>
+                                        <TriviaAnswerButton>
+                                            {decodeHtml(answer)}
+                                        </TriviaAnswerButton>
+                                    </label>
                                 </TriviaAnswer>
                             )
                         })
@@ -86,7 +122,10 @@ export default class TriviaQuestions extends Component<Props, State> {
                 </TriviaAnswersGroup>
                 <TriviaBottom>
                     <TriviaQuestionCategory>{currQuestion.category}</TriviaQuestionCategory>
-                    <TriviaNextQuestionButton>Next</TriviaNextQuestionButton>
+                    {this.state.userAnswers.length === this.state.currentQuestion ? (
+                        <TriviaNextQuestionButton onClick={this.handleNextQuestion}>Next</TriviaNextQuestionButton>
+                    ) : ""}
+                    
                 </TriviaBottom>
             </>
         );
